@@ -101,9 +101,9 @@
       });
 
       // remove image from DOM when clicked
-      $('article img').on('click', () => {
+      $('img').on('click', (e) => {
         if (confirm("Are you sure you want to delete this image?"))
-          $('article img').remove();
+          $(e.target).remove();
       });
 
     });
