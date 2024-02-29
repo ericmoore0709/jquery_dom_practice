@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies App</title>
+
+    <style>
+        li span,
+        li button {
+            margin: .5em;
+        }
+
+        li {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            width: max-content;
+        }
+    </style>
+</head>
+
+<body>
+    <form>
+        <input id="input_title" placeholder="Title" />
+        <input type="number" max="5" min="1" id="input_rating" placeholder="Rating" />
+        <input type="submit" value="GO" />
+    </form>
+
+    <ul></ul>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script>
+        $('document').ready(() => {
+
+            $('form').submit((e) => {
+                e.preventDefault();
+                const title = $('#input_title').val();
+                const rating = $('#input_rating').val();
+
+                if (!title || !rating) return
+
+                const movieBtn = $('<button>', { text: 'X' }).click((e) => {
+                    if (confirm(`Are you sure you want to delete ${e.target.parentElement.childNodes[0].textContent}?`))
+                        e.target.parentElement.remove();
+                })
+
+                const li = $('<li>')
+                    .append($('<span>', { text: title }))
+                    .append($('<span>', { text: rating }))
+                    .append(movieBtn);
+
+                $('ul').append(li);
+            });
+        });
+
+    </script>
+</body>
+
+</html>
