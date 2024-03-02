@@ -47,22 +47,28 @@
         $('document').ready(() => {
 
             $('form').submit((e) => {
-                e.preventDefault();
-                const title = $('#input_title').val();
-                const rating = $('#input_rating').val();
 
+                // prevent default and get form input values
+                e.preventDefault();
+                const title = $('#input_title').val().trim();
+                const rating = $('#input_rating').val().trim();
+
+                // data validation: if either are blank
                 if (!title || !rating) return
 
-                if (title.trim().length < 2) {
+                // data validation: if title fewer than two characters
+                if (title.length < 2) {
                     alert("Title must be at least 2 characters.");
                     return;
                 }
 
+                // delete button to add and its click event
                 const movieBtn = $('<button>', { text: 'X' }).click((e) => {
                     if (confirm(`Are you sure you want to delete ${e.target.parentElement.childNodes[0].textContent}?`))
                         e.target.parentElement.remove();
                 })
 
+                // create movie li and append to movies ul
                 const li = $('<li>')
                     .append($('<span>', { text: title }))
                     .append($('<span>', { text: rating }))
@@ -73,62 +79,50 @@
 
             // #region utility functions
 
-
-            function lowercasedLiText(li) {
-                return li.children[0].innerText.toLowerCase();
-            }
-
-            function liNum(li) {
-                return Number.parseInt(li.children[1].innerText);
-            }
-
+            // compare two values -- for using .sort array arrow funciton
             function _customCompare(leftArg, rightArg, directionStr) {
-
                 if (directionStr === "asc") {
                     if (leftArg < rightArg) return -1;
                     if (leftArg > rightArg) return 1;
                     else return 0;
                 }
 
-                else if (directionStr === "dec") {
+                if (directionStr === "dec") {
                     if (leftArg < rightArg) return 1;
                     if (leftArg > rightArg) return -1;
                     else return 0;
                 }
 
-
+                else throw new Error(`Cannot sort with given directionStr: ${directionStr}`);
             }
 
-            function _sortingMethodText(x, y, direction) {
-                return _customCompare(lowercasedLiText(x), lowercasedLiText(y), direction);
+            // returns the value of li given typeStr ("str" returns string, "int" returns int)
+            function _typeOf(li, typeStr) {
+                if (typeStr === "str")
+                    return li.children[0].innerText.toLowerCase();
+                if (typeStr === "int")
+                    return Number.parseInt(li.children[1].innerText);
+                else throw new Error(`Cannot parse type of typeStr: ${typeStr}.`);
             }
 
-            function _sortingMethodNum(x, y, direction) {
-                return _customCompare(liNum(x), liNum(y), direction);
+            // abstracts sorting method logic and type casting into single function
+            function _desiredSortingMethod(x, y, type, direction) {
+                return _customCompare(_typeOf(x, type), _typeOf(y, type), direction);
             }
 
             // #endregion
 
-            $('#title_asc').click(() => {
-                const sortedList = $('ul li').get().sort((x, y) => (_sortingMethodText(x, y, "asc")));
+            // click handler for sort buttons
+            function _handleSortClick(typeStr, direction) {
+                const sortedList = $('ul li').get().sort((x, y) => (_desiredSortingMethod(x, y, typeStr, direction)));
                 $('ul').empty().append(sortedList);
-            });
+            };
 
-            $('#title_dec').click(() => {
-                const sortedList = $('ul li').get().sort((x, y) => (_sortingMethodText(x, y, "dec")));
-                $('ul').empty().append(sortedList);
-            });
-
-            $('#rating_asc').click(() => {
-                const sortedList = $('ul li').get().sort((x, y) => (_sortingMethodNum(x, y, "asc")));
-                $('ul').empty().append(sortedList);
-            });
-
-            $('#rating_dec').click(() => {
-                const sortedList = $('ul li').get().sort((x, y) => (_sortingMethodNum(x, y, "dec")));
-                $('ul').empty().append(sortedList);
-            });
-
+            // assign click handler to sort buttons
+            $('#title_asc').click(_handleSortClick("str", "asc"));
+            $('#title_dec').click(_handleSortClick("str", "dec"));
+            $('#rating_asc').click(_handleSortClick("int", "asc"));
+            $('#rating_dec').click(_handleSortClick("int", "dec"));
         });
 
     </script>
