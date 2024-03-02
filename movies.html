@@ -24,11 +24,23 @@
 <body>
     <form>
         <input id="input_title" placeholder="Title" />
-        <input type="number" max="5" min="1" id="input_rating" placeholder="Rating" />
+        <input type="number" max="10" min="0" id="input_rating" placeholder="Rating" />
         <input type="submit" value="GO" />
     </form>
 
-    <ul></ul>
+    <div id="movie_container">
+        <div id="buttons_container">
+            <div id="title_buttons">
+                <button id="title_asc">Title Asc</button>
+                <button id="title_dec">Title Dec</button>
+            </div>
+            <div id="rating_buttons">
+                <button id="rating_asc">Rating Asc</button>
+                <button id="rating_dec">Rating Dec</button>
+            </div>
+        </div>
+        <ul></ul>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <script>
@@ -40,6 +52,11 @@
                 const rating = $('#input_rating').val();
 
                 if (!title || !rating) return
+
+                if (title.trim().length < 2) {
+                    alert("Title must be at least 2 characters.");
+                    return;
+                }
 
                 const movieBtn = $('<button>', { text: 'X' }).click((e) => {
                     if (confirm(`Are you sure you want to delete ${e.target.parentElement.childNodes[0].textContent}?`))
@@ -53,6 +70,65 @@
 
                 $('ul').append(li);
             });
+
+            // #region utility functions
+
+
+            function lowercasedLiText(li) {
+                return li.children[0].innerText.toLowerCase();
+            }
+
+            function liNum(li) {
+                return Number.parseInt(li.children[1].innerText);
+            }
+
+            function _customCompare(leftArg, rightArg, directionStr) {
+
+                if (directionStr === "asc") {
+                    if (leftArg < rightArg) return -1;
+                    if (leftArg > rightArg) return 1;
+                    else return 0;
+                }
+
+                else if (directionStr === "dec") {
+                    if (leftArg < rightArg) return 1;
+                    if (leftArg > rightArg) return -1;
+                    else return 0;
+                }
+
+
+            }
+
+            function _sortingMethodText(x, y, direction) {
+                return _customCompare(lowercasedLiText(x), lowercasedLiText(y), direction);
+            }
+
+            function _sortingMethodNum(x, y, direction) {
+                return _customCompare(liNum(x), liNum(y), direction);
+            }
+
+            // #endregion
+
+            $('#title_asc').click(() => {
+                const sortedList = $('ul li').get().sort((x, y) => (_sortingMethodText(x, y, "asc")));
+                $('ul').empty().append(sortedList);
+            });
+
+            $('#title_dec').click(() => {
+                const sortedList = $('ul li').get().sort((x, y) => (_sortingMethodText(x, y, "dec")));
+                $('ul').empty().append(sortedList);
+            });
+
+            $('#rating_asc').click(() => {
+                const sortedList = $('ul li').get().sort((x, y) => (_sortingMethodNum(x, y, "asc")));
+                $('ul').empty().append(sortedList);
+            });
+
+            $('#rating_dec').click(() => {
+                const sortedList = $('ul li').get().sort((x, y) => (_sortingMethodNum(x, y, "dec")));
+                $('ul').empty().append(sortedList);
+            });
+
         });
 
     </script>
